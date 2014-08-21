@@ -21,6 +21,7 @@ try:
 except ImportError:
   USE_CYTHON = False
   print 'Building without Cython'
+IS_DARWIN = os.uname()[0] == 'Darwin'
 
 EXTENSION = 'pyx' if USE_CYTHON else 'c'
 README = open(os.path.join(os.path.dirname(__file__), 'README.md')).read()
@@ -29,7 +30,11 @@ REQUIREMENTS = [
                                              'requirements.txt')).readlines()
   ]
 
-ext_modules = [Extension('timeuuid.timeuuid',
+if IS_DARWIN:
+  ext_modules = [Extension('timeuuid.timeuuid',
+                         sources=['timeuuid/timeuuid.%s' % EXTENSION])]
+else:
+  ext_modules = [Extension('timeuuid.timeuuid',
                          sources=['timeuuid/timeuuid.%s' % EXTENSION],
                          libraries=['uuid'])]
 
